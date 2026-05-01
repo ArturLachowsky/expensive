@@ -6,6 +6,7 @@ import csv
 def main():
     print("Running Expense Tracker!")
     expense_file_path = "expenses.csv"
+    open(expense_file_path, "a").close()
 
     if len(sys.argv) < 2:
         print("Usage: python expenses.py <command>")
@@ -33,7 +34,6 @@ def main():
             print(f"Error: category '{expense_category}' does not exist.")
             print(f"Available categories: {', '.join(existing_categories) if existing_categories else 'none'}")
             sys.exit(1)
-
         expense = Expense(name=expense_name, amount=expense_amount, category=expense_category)
         saved = save_expense_to_file(expense, expense_file_path)
         print(f"Saved: {saved.name}, {saved.amount}, {saved.category} to {expense_file_path}")
@@ -60,7 +60,12 @@ def main():
         print(f"Total Spent: {total:.2f}")
 
     elif command == "add-category":
+        existing_categories = get_existing_categories(expense_file_path)
         category = new_category(expense_file_path)
+        if category in existing_categories:
+            print(f"Error: category '{category}' already exists.")
+            sys.exit(1)
+
         if category:
             print(f"Category '{category}' added to {expense_file_path}")
         else:
@@ -70,6 +75,7 @@ def main():
         print(f"Unknown command: {command}")
         print("Available commands: add, add-category, total, list")
         sys.exit(1)
+
 
 
 def get_existing_categories(expense_file_path):
