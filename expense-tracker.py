@@ -4,76 +4,76 @@ import csv
 
 
 def main():
-    print("Running Expense Tracker!")
+    print("Учет расходов запущен")
     expense_file_path = "expenses.csv"
     open(expense_file_path, "a").close()
 
     if len(sys.argv) < 2:
-        print("Usage: python expenses.py <command>")
+        print("Введи: python expenses.py <add,add-category,list,total>")
         sys.exit(1)
 
     command = sys.argv[1].lower()
 
     if command == "add":
         if len(sys.argv) != 5:
-            print("Usage: python expenses.py add <amount> <category> <name>")
+            print("Введи: python expenses.py add <стоимость> <категория> <название>")
             sys.exit(1)
         try:
             expense_amount = float(sys.argv[2])
         except ValueError:
-            print("Error: amount must be a number")
+            print("Ошибка: Стоимость должна быть числом")
             sys.exit(1)
         expense_category = sys.argv[3]
         expense_name = sys.argv[4]
 
         existing_categories = get_existing_categories(expense_file_path)
         if existing_categories is None:
-            print("Error: expenses file not found. No categories exist yet.")
+            print("Ошибка: файл расходов не найден. Категории пока не созданы.")
             sys.exit(1)
         if expense_category not in existing_categories:
-            print(f"Error: category '{expense_category}' does not exist.")
-            print(f"Available categories: {', '.join(existing_categories) if existing_categories else 'none'}")
+            print(f"Ошибка: категории '{expense_category}' не существует.")
+            print(f"Доступные категории: {', '.join(existing_categories) if existing_categories else 'none'}")
             sys.exit(1)
         expense = Expense(name=expense_name, amount=expense_amount, category=expense_category)
         saved = save_expense_to_file(expense, expense_file_path)
-        print(f"Saved: {saved.name}, {saved.amount}, {saved.category} to {expense_file_path}")
+        print(f"Сохранено: {saved.name}, {saved.amount}, {saved.category} to {expense_file_path}")
 
         amount_by_category, total_spent = summarize_expenses(expense_file_path)
-        print("Expenses By Category:")
+        print("Расходы по категориям:")
         for key, amount in amount_by_category.items():
             print(f"  {key}: {amount:.2f}")
-        print(f"Total Spent: {total_spent:.2f}")
+        print(f"Общая сумма: {total_spent:.2f}")
 
     elif command == "list":
         category = sys.argv[2] if len(sys.argv) >= 3 else None
         expenses = list_expenses(expense_file_path, category)
         if not expenses:
-            print(f"No expenses found in category '{category}'." if category else "No expenses found.")
+            print(f"В категории Расходы ничего не найдено '{category}'." if category else "Расходы не обнаружены.")
         else:
-            print("\nAll Expenses:")
+            print("\nВсе расходы:")
             for exp in expenses:
                 print(f"  {exp.name}: {exp.amount:.2f} ({exp.category})")
-            print(f"\nTotal Spent: {sum(e.amount for e in expenses):.2f}")
+            print(f"\nОбщая сумма: {sum(e.amount for e in expenses):.2f}")
 
     elif command == "total":
         total = show_total(expense_file_path)
-        print(f"Total Spent: {total:.2f}")
+        print(f"Общая сумма: {total:.2f}")
 
     elif command == "add-category":
         existing_categories = get_existing_categories(expense_file_path)
         category = new_category(expense_file_path)
         if category in existing_categories:
-            print(f"Error: category '{category}' already exists.")
+            print(f"Ошибка: категория '{category}' уже существует.")
             sys.exit(1)
 
         if category:
-            print(f"Category '{category}' added to {expense_file_path}")
+            print(f"Категория '{category}' добавлена в {expense_file_path}")
         else:
-            print("Error: category name not provided.")
+            print("Ошибка: не указано название категории.")
 
     else:
-        print(f"Unknown command: {command}")
-        print("Available commands: add, add-category, total, list")
+        print(f"Неизвестная команда: {command}")
+        print("Доступные команды: add, add-category, total, list")
         sys.exit(1)
 
 
