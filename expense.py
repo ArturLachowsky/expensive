@@ -1,5 +1,5 @@
 class Expense:
-    def __init__(self, name: str, amount: float, category: str):
+    def __init__(self, name, category, amount) -> None:
         self.name = name
         self.category = category
         self.amount = amount
